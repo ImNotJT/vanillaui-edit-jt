@@ -1,9 +1,16 @@
 # vanillaui-edit-jt
+- CHANGELOG:
+- Added dragging..
+- Optimized a bit..
+
+
+INTRO:
 Hello! This is a edit of Vanillas UI which includes
 ~ sub menus
 ~ some buttons
 ~ different height / width
 ~ ON / OFF checkboxes, rather than a big rectangle.
+~ dragging
 
 -- [ BUTTON EXAMPLE ] --
 UI.Button("Refill Health", Vec2(100, 20), function()

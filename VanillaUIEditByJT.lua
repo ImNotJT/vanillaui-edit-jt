@@ -252,6 +252,106 @@ function UI.Checkbox(displayName, configName, clickFunc)
     end 
 end
 
+function DrawSubMenus()
+    -- [ Sub Menu Buttons ] IGNORE THIS!!
+    UI.Button("", Vec2(60, 30), function()
+        SetSubMenuActive("Self")
+    end, GUI.position.x + 10, GUI.position.y - 45, {r=255, g=255, b=255, a=0})
+
+    UI.Button("", Vec2(60, 30), function()
+        SetSubMenuActive("Vehicles")
+    end, GUI.position.x + 80, GUI.position.y - 45, {r=255, g=255, b=255, a=0})
+
+    UI.Button("", Vec2(60, 30), function()
+        SetSubMenuActive("Weapons")
+    end, GUI.position.x + 150, GUI.position.y - 45, {r=255, g=255, b=255, a=0})
+
+    UI.Button("", Vec2(60, 30), function()
+        SetSubMenuActive("Visuals")
+    end, GUI.position.x + 220, GUI.position.y - 45, {r=255, g=255, b=255, a=0})
+
+    UI.Button("", Vec2(60, 30), function()
+        SetSubMenuActive("Players")
+    end, GUI.position.x + 290, GUI.position.y - 45, {r=255, g=255, b=255, a=0})
+
+    UI.Button("", Vec2(65, 30), function()
+        SetSubMenuActive("Misc")
+    end, GUI.position.x + 360, GUI.position.y - 45, {r=255, g=255, b=255, a=0})
+
+    Renderer.DrawText(GUI.position.x + 38, GUI.position.y - 42, 120, 120, 120, 255, "self", 4, true, 0.33) -- Self Sub Menu
+    Renderer.DrawText(GUI.position.x + 110, GUI.position.y - 42, 120, 120, 120, 255, "vehicles", 4, true, 0.33) -- Vehicles Sub Menus
+    Renderer.DrawText(GUI.position.x + 180, GUI.position.y - 42, 120, 120, 120, 255, "weapons", 4, true, 0.33) -- Weapons Sub Menus
+    Renderer.DrawText(GUI.position.x + 250, GUI.position.y - 42, 120, 120, 120, 255, "visuals", 4, true, 0.33) -- Visuals Sub Menus
+    Renderer.DrawText(GUI.position.x + 320, GUI.position.y - 42, 120, 120, 120, 255, "players", 4, true, 0.33) -- Players Sub Menus
+    Renderer.DrawText(GUI.position.x + 390, GUI.position.y - 42, 120, 120, 120, 255, "misc", 4, true, 0.33) -- Misc Sub Menus
+end
+
+function revivePlayer()
+    local hm = GetEntityCoords(GetPlayerPed(-1))
+    StopScreenEffect("DeathFailOut")
+    SetEntityHealth(PlayerPedId(-1), 200)
+    ClearPedBloodDamage(GetPlayerPed(-1))
+    SetEntityCoordsNoOffset(PlayerPedId(), hm.x, hm.y, hm.z, false, false, false, true)
+    NetworkResurrectLocalPlayer(hm.x, hm.y, hm.z, false, true, false)
+    TriggerServerEvent("esx:onPlayerSpawn")
+    TriggerEvent("esx:onPlayerSpawn")
+    TriggerEvent("playerSpawned")
+end
+function initiateSelf()
+    Renderer.DrawText(GUI.position.x + 38, GUI.position.y - 42, 0, 0, 255, 255, "self", 4, true, 0.33)
+end
+
+function initiateVehicles()
+    Renderer.DrawText(GUI.position.x + 110, GUI.position.y - 42, 0, 0, 255, 255, "vehicles", 4, true, 0.33)
+end
+
+function initiateWeapons()
+    Renderer.DrawText(GUI.position.x + 180, GUI.position.y - 42, 0, 0, 255, 255, "weapons", 4, true, 0.33)
+end
+
+function initiateVisuals()
+    Renderer.DrawText(GUI.position.x + 250, GUI.position.y - 42, 0, 0, 255, 255, "visuals", 4, true, 0.33)
+end
+
+function initiatePlayers()
+    Renderer.DrawText(GUI.position.x + 320, GUI.position.y - 42, 0, 0, 255, 255, "players", 4, true, 0.33)
+end
+
+function initiateMisc()
+    Renderer.DrawText(GUI.position.x + 390, GUI.position.y - 42, 0, 0, 255, 255, "misc", 4, true, 0.33)
+end
+function initiateDragging()
+    if Renderer.mouseInBounds(GUI.position.x + 425, GUI.position.y - 45, GUI.position.w - 435, GUI.position.h - 370) then
+        drag = true
+    end
+
+    if not IsDisabledControlPressed(0, 24) then
+        drag = false
+    end
+
+    if drag then
+        GUI.position.x = GUI.cursor.x - 450
+        GUI.position.y = GUI.cursor.y + 30
+
+    end
+
+    if Renderer.mouseInBounds(GUI.position.x + 425, GUI.position.y - 45, GUI.position.w - 435, GUI.position.h - 370) then
+        if IsDisabledControlPressed(0, 25) then
+            GUI.position.x = 600
+            GUI.position.y = 300
+        end
+    end
+end
+
+
+function initiateSubMenus()
+    Renderer.DrawRect(GUI.position.x, GUI.position.y - 50, GUI.position.w, GUI.position.h - 360, 18, 18, 18, 255) -- ignore this 
+    Renderer.DrawBorderedRect(GUI.position.x, GUI.position.y - 50, GUI.position.w, GUI.position.h - 360, 90, 90, 90, 255) -- ignore this
+    Renderer.DrawRect(GUI.position.x + 425, GUI.position.y - 45, GUI.position.w - 435, GUI.position.h - 370, 30, 30, 30, 255)
+    Renderer.DrawBorderedRect(GUI.position.x + 425, GUI.position.y - 45, GUI.position.w - 435, GUI.position.h - 370, 120, 120, 120, 255)
+end
+
+
 local entityEnumerator = {
     __gc = function(enum)
     if enum.destructor and enum.handle then
@@ -363,13 +463,11 @@ Citizen.CreateThread(function()
         while true do
             if GUI.active then
                 UI.Begin("Edit of Vanillas UI - JT")
-                -- [ Sub menu title bar ] IGNORE THIS
-                Renderer.DrawRect(600, 250, 500, 40, 18, 18, 18, 255) -- ignore this 
-                Renderer.DrawBorderedRect(600, 250, 500, 40, 90, 90, 90, 255) -- ignore this
-                -- [ End of sub menu title bar ] IGNORE THIS
+                initiateDragging()
+                initiateSubMenus()
 
                 if IsSubMenuOpen("Self") then 
-                Renderer.DrawText(638, 258, 0, 0, 255, 255, "self", 4, true, 0.33) -- ignore this
+                initiateSelf()
 
                 UI.Button("Refill Health", Vec2(100, 20), function()
                     SetEntityHealth(PlayerPedId(-1), 200)
@@ -381,15 +479,7 @@ Citizen.CreateThread(function()
                 end)
 
                 UI.Button("Revive", Vec2(100, 20), function()
-                    local al = GetEntityCoords(GetPlayerPed(-1))
-                    StopScreenEffect("DeathFailOut")
-                    SetEntityHealth(PlayerPedId(-1), 200)
-                    ClearPedBloodDamage(GetPlayerPed(-1))
-                    SetEntityCoordsNoOffset(PlayerPedId(), al.x, al.y, al.z, false, false, false, true)
-                    NetworkResurrectLocalPlayer(al.x, al.y, al.z, false, true, false)
-                    TriggerServerEvent("esx:onPlayerSpawn")
-                    TriggerEvent("esx:onPlayerSpawn")
-                    TriggerEvent("playerSpawned")
+                    revivePlayer()
                 end)
 
                 UI.SameLine()
@@ -397,12 +487,11 @@ Citizen.CreateThread(function()
                     SetEntityHealth(PlayerPedId(-1), 0)
                 end)
 
-
                 UI.Button("Godmode", Vec2(100, 20), function() godmode = not godmode SetEntityInvincible(player, godmode) end, nil, nil, nil, true, godmode) -- checkbox
             end
 
             if IsSubMenuOpen("Vehicles") then
-                Renderer.DrawText(710, 258, 0, 0, 255, 255, "vehicles", 4, true, 0.33) -- ignore this
+                initiateVehicles()
                 
                 UI.Button("Vehicle Example Button", Vec2(100, 20), function()
                     print("I said it's an example..")
@@ -410,7 +499,7 @@ Citizen.CreateThread(function()
             end
 
             if IsSubMenuOpen("Weapons") then
-                Renderer.DrawText(780, 258, 0, 0, 255, 255, "weapons", 4, true, 0.33) -- ignore this
+                initiateWeapons()
 
                 UI.Button("Weapons Example Button", Vec2(100, 20), function()
                     print("I said it's an example..")
@@ -418,7 +507,7 @@ Citizen.CreateThread(function()
             end
 
             if IsSubMenuOpen("Visuals") then
-                Renderer.DrawText(850, 258, 0, 0, 255, 255, "visuals", 4, true, 0.33) -- ignore this
+                initiateVisuals()
 
                 UI.Button("Visuals Example Button", Vec2(100, 20), function()
                     print("I said it's an example..")
@@ -426,7 +515,7 @@ Citizen.CreateThread(function()
             end
 
             if IsSubMenuOpen("Players") then
-                Renderer.DrawText(920, 258, 0, 0, 255, 255, "players", 4, true, 0.33) -- ignore this
+                initiatePlayers()
 
                 UI.Button("Players Example Button", Vec2(100, 20), function()
                     print("I said it's an example..")
@@ -434,7 +523,7 @@ Citizen.CreateThread(function()
             end
 
             if IsSubMenuOpen("Misc") then
-                Renderer.DrawText(990, 258, 0, 0, 255, 255, "misc", 4, true, 0.33) -- Misc Sub Menus
+                initiateMisc()
 
                 UI.Button("Misc Example Button", Vec2(100, 20), function()
                     print("I said it's an example..")
@@ -444,40 +533,7 @@ Citizen.CreateThread(function()
                     KillMenu() -- not a good method
                 end)
             end
-
-
-                -- [ Sub Menu Buttons ] IGNORE THIS!!
-                UI.Button("", Vec2(60, 30), function()
-                    SetSubMenuActive("Self")
-                end, 610, 255, {r=255, g=255, b=255, a=0})
-    
-                UI.Button("", Vec2(60, 30), function()
-                    SetSubMenuActive("Vehicles")
-                end, 680, 255, {r=255, g=255, b=255, a=0})
-    
-                UI.Button("", Vec2(60, 30), function()
-                    SetSubMenuActive("Weapons")
-                end, 750, 255, {r=255, g=255, b=255, a=0})
-    
-                UI.Button("", Vec2(60, 30), function()
-                    SetSubMenuActive("Visuals")
-                end, 820, 255, {r=255, g=255, b=255, a=0})
-    
-                UI.Button("", Vec2(60, 30), function()
-                    SetSubMenuActive("Players")
-                end, 890, 255, {r=255, g=255, b=255, a=0})
-    
-                UI.Button("", Vec2(65, 30), function()
-                    SetSubMenuActive("Misc")
-                end, 960, 255, {r=255, g=255, b=255, a=0})
-
-                Renderer.DrawText(638, 258, 120, 120, 120, 255, "self", 4, true, 0.33) -- Self Sub Menu
-                Renderer.DrawText(710, 258, 120, 120, 120, 255, "vehicles", 4, true, 0.33) -- Vehicles Sub Menus
-                Renderer.DrawText(780, 258, 120, 120, 120, 255, "weapons", 4, true, 0.33) -- Weapons Sub Menus
-                Renderer.DrawText(850, 258, 120, 120, 120, 255, "visuals", 4, true, 0.33) -- Visuals Sub Menus
-                Renderer.DrawText(920, 258, 120, 120, 120, 255, "players", 4, true, 0.33) -- Players Sub Menus
-                Renderer.DrawText(990, 258, 120, 120, 120, 255, "misc", 4, true, 0.33) -- Misc Sub Menus
-
+            DrawSubMenus()
                 UI.End()
             end
             UI.CheckOpen()

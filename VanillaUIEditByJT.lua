@@ -194,6 +194,7 @@ function enableShowFps()
     local GetFrames = (1.0 / GetFrameTime())
     Renderer.DrawText(fpsX, fpsY, 255, 255, 255, 255, "FPS: ["..math.ceil(GetFrames).."]", 4, true, 0.4)
 
+    if GUI.active then
     if Renderer.mouseInBounds(fpsX, fpsY, 50, 50) then
         drag2 = true
     end
@@ -208,8 +209,7 @@ function enableShowFps()
 
     end
 end
-
-
+end
 
 -- Runs the end function for the menu.
 function UI.End()

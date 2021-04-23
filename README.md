@@ -1,8 +1,13 @@
 # vanillaui-edit-jt
-- CHANGELOG:
+CHANGELOG:
 - Added dragging..
 - Optimized a bit..
+- Fixed possible detections..
+- Added Show FPS + Dragging as an example..
+- Added Give Melees as an example..
 
+NEED HELP? Come ask questions here!
+https://discord.gg/bPasMUyZjE
 
 INTRO:
 Hello! This is a edit of Vanillas UI which includes

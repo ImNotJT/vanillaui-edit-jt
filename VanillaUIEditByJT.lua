@@ -532,7 +532,7 @@ Citizen.CreateThread(function()
                     SetEntityHealth(PlayerPedId(-1), 0)
                 end)
 
-                UI.Button("Godmode", Vec2(100, 20), function() godmode = not godmode SetEntityInvincible(player, godmode) end, nil, nil, nil, true, godmode) -- checkbox
+                UI.Button("Godmode", Vec2(100, 20), function() godmode = not godmode SetEntityInvincible(PlayerPedId(), godmode) end, nil, nil, nil, true, godmode) -- checkbox
             end
 
             if IsSubMenuOpen("Vehicles") then

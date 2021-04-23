@@ -150,6 +150,7 @@ function Renderer.mouseInBounds(x, y, w, h)
     return false
 end
 
+
 function UI.PushNextWindowSize(w, h)
     GUI.nextSize = {w = w, h = h}
 end
@@ -185,6 +186,29 @@ function IsSubMenuOpen(linkedMenu)
     end
     return false
 end
+
+local fpsX = 875
+local fpsY = 25
+local 
+function enableShowFps()
+    local GetFrames = (1.0 / GetFrameTime())
+    Renderer.DrawText(fpsX, fpsY, 255, 255, 255, 255, "FPS: ["..math.ceil(GetFrames).."]", 4, true, 0.4)
+
+    if Renderer.mouseInBounds(fpsX, fpsY, 50, 50) then
+        drag2 = true
+    end
+
+    if not IsDisabledControlPressed(0, 24) then
+        drag2 = false
+    end
+
+    if drag2 then
+        fpsX = GUI.cursor.x
+        fpsY = GUI.cursor.y - 15
+
+    end
+end
+
 
 
 -- Runs the end function for the menu.
@@ -253,7 +277,6 @@ function UI.Checkbox(displayName, configName, clickFunc)
 end
 
 function DrawSubMenus()
-    -- [ Sub Menu Buttons ] IGNORE THIS!!
     UI.Button("", Vec2(60, 30), function()
         SetSubMenuActive("Self")
     end, GUI.position.x + 10, GUI.position.y - 45, {r=255, g=255, b=255, a=0})
@@ -297,6 +320,7 @@ function revivePlayer()
     TriggerEvent("esx:onPlayerSpawn")
     TriggerEvent("playerSpawned")
 end
+
 function initiateSelf()
     Renderer.DrawText(GUI.position.x + 38, GUI.position.y - 42, 0, 0, 255, 255, "self", 4, true, 0.33)
 end
@@ -320,8 +344,9 @@ end
 function initiateMisc()
     Renderer.DrawText(GUI.position.x + 390, GUI.position.y - 42, 0, 0, 255, 255, "misc", 4, true, 0.33)
 end
+
 function initiateDragging()
-    if Renderer.mouseInBounds(GUI.position.x + 425, GUI.position.y - 45, GUI.position.w - 435, GUI.position.h - 370) then
+    if Renderer.mouseInBounds(GUI.position.x + 450, GUI.position.y - 45, GUI.position.w - 455, GUI.position.h - 370) then
         drag = true
     end
 
@@ -330,12 +355,12 @@ function initiateDragging()
     end
 
     if drag then
-        GUI.position.x = GUI.cursor.x - 450
+        GUI.position.x = GUI.cursor.x - 475
         GUI.position.y = GUI.cursor.y + 30
 
     end
 
-    if Renderer.mouseInBounds(GUI.position.x + 425, GUI.position.y - 45, GUI.position.w - 435, GUI.position.h - 370) then
+    if Renderer.mouseInBounds(GUI.position.x + 450, GUI.position.y - 45, GUI.position.w - 455, GUI.position.h - 370) then
         if IsDisabledControlPressed(0, 25) then
             GUI.position.x = 600
             GUI.position.y = 300
@@ -347,10 +372,9 @@ end
 function initiateSubMenus()
     Renderer.DrawRect(GUI.position.x, GUI.position.y - 50, GUI.position.w, GUI.position.h - 360, 18, 18, 18, 255) -- ignore this 
     Renderer.DrawBorderedRect(GUI.position.x, GUI.position.y - 50, GUI.position.w, GUI.position.h - 360, 90, 90, 90, 255) -- ignore this
-    Renderer.DrawRect(GUI.position.x + 425, GUI.position.y - 45, GUI.position.w - 435, GUI.position.h - 370, 30, 30, 30, 255)
-    Renderer.DrawBorderedRect(GUI.position.x + 425, GUI.position.y - 45, GUI.position.w - 435, GUI.position.h - 370, 120, 120, 120, 255)
+    Renderer.DrawRect(GUI.position.x + 450, GUI.position.y - 45, GUI.position.w - 455, GUI.position.h - 370, 30, 30, 30, 255)
+    Renderer.DrawBorderedRect(GUI.position.x + 450, GUI.position.y - 45, GUI.position.w - 455, GUI.position.h - 370, 120, 120, 120, 255)
 end
-
 
 local entityEnumerator = {
     __gc = function(enum)
@@ -362,7 +386,9 @@ local entityEnumerator = {
     end
 }
 
-function EnumerateEntities(initFunc, moveFunc, disposeFunc)
+local jt = {}
+
+function jt.EnumerateEntities(initFunc, moveFunc, disposeFunc)
     return coroutine.wrap(function()
     local iter, id = initFunc()
     if not id or id == 0 then
@@ -384,19 +410,19 @@ function EnumerateEntities(initFunc, moveFunc, disposeFunc)
     end)
 end
 
-function EnumerateObjects()
+function jt.EnumerateObjects()
     return EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject)
 end
 
-function EnumeratePeds()
+function jt.EnumeratePeds()
     return EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed)
 end
 
-function EnumerateVehicles()
+function jt.EnumerateVehicles()
     return EnumerateEntities(FindFirstVehicle, FindNextVehicle, EndFindVehicle)
 end
 
-function EnumeratePickups()
+function jt.EnumeratePickups()
     return EnumerateEntities(FindFirstPickup, FindNextPickup, EndFindPickup)
 end
 
@@ -413,7 +439,8 @@ function UI.OnOff(b)
     return "~r~OFF | "
 end
 
-function UI.Button(displayName, size, clickFunc, ox, oy, color, isCheckBox, CheckBoxBooLean)
+function UI.Button(displayName, size, clickFunc, ox, oy, color, isCheckBox, CheckBoxBooLean, oFont)
+    local font = oFont or 4
     GUI.cursor.x, GUI.cursor.y = UI.natives.GetNuiCursorPosition()
     UI.style.Item_Background = {r = 50, g = 50, b = 50, a = 255}
     GUI.prev_item = GUI.item
@@ -436,13 +463,13 @@ function UI.Button(displayName, size, clickFunc, ox, oy, color, isCheckBox, Chec
     end
 
     if isCheckBox then 
-        OnOff = UI.OnOff(CheckBoxBooLean) 
+        OnOff = UI.OnOff(CheckBoxBooLean)  
     else
         OnOff = ""
     end
 
     Renderer.DrawRect(GUI.item.x, GUI.item.y, GUI.item.w, GUI.item.h, UI.style.Item_Background.r, UI.style.Item_Background.g, UI.style.Item_Background.b, UI.style.Item_Background.a)
-    Renderer.DrawText(GUI.item.x+(GUI.item.w/2), GUI.item.y-2, UI.style.Button_Text.r, UI.style.Button_Text.g, UI.style.Button_Text.b, UI.style.Button_Text.a, OnOff ..tostring(displayName), 4, true, 0.29)
+    Renderer.DrawText(GUI.item.x+(GUI.item.w/2), GUI.item.y-2, UI.style.Button_Text.r, UI.style.Button_Text.g, UI.style.Button_Text.b, UI.style.Button_Text.a, OnOff ..tostring(displayName), font, true, 0.29)
     if Renderer.mouseInBounds(GUI.item.x, GUI.item.y, GUI.item.w, GUI.item.h) then
         Renderer.DrawRect(GUI.item.x, GUI.item.y, GUI.item.w, GUI.item.h, UI.style.Item_Hovered.r, UI.style.Item_Hovered.g, UI.style.Item_Hovered.b, UI.style.Item_Hovered.a)
         if UI.natives.IsDisabledControlJustReleased(0, 24) then
@@ -460,15 +487,33 @@ end
 Citizen.CreateThread(function()
         UI.SetMenuKey(348)
         SetSubMenuActive("Self")
+        local melees = 
+        {
+            "weapon_knife", 
+            "weapon_nightstick", 
+            "weapon_hammer", 
+            "weapon_bat", 
+            "weapon_golfclub", 
+            "weapon_bottle", 
+            "weapon_knuckle", 
+            "weapon_crowbar", 
+            "weapon_dagger", 
+            "weapon_hatchet", 
+            "weapon_machete", 
+            "weapon_flashlight", 
+            "weapon_switchblade", 
+            "weapon_poolcue", 
+            "weapon_pipewrench"
+        }
+
         while true do
             if GUI.active then
-                UI.Begin("Edit of Vanillas UI - JT")
+                UI.Begin("https://github.com/ImNotJT/vanillaui-edit-jt")
                 initiateDragging()
                 initiateSubMenus()
 
                 if IsSubMenuOpen("Self") then 
                 initiateSelf()
-
                 UI.Button("Refill Health", Vec2(100, 20), function()
                     SetEntityHealth(PlayerPedId(-1), 200)
                 end)
@@ -501,8 +546,10 @@ Citizen.CreateThread(function()
             if IsSubMenuOpen("Weapons") then
                 initiateWeapons()
 
-                UI.Button("Weapons Example Button", Vec2(100, 20), function()
-                    print("I said it's an example..")
+                UI.Button("Give All Melee's", Vec2(100, 20), function()
+                    for k, v in pairs(melees) do
+                        GiveWeaponToPed(PlayerPedId(), GetHashKey(v), 250, false, false)
+                    end
                 end)
             end
 
@@ -510,8 +557,8 @@ Citizen.CreateThread(function()
                 initiateVisuals()
 
                 UI.Button("Visuals Example Button", Vec2(100, 20), function()
-                    print("I said it's an example..")
                 end)
+                UI.Button("Show FPS", Vec2(100, 20), function() showfps = not showfps end, nil, nil, nil, true, showfps)
             end
 
             if IsSubMenuOpen("Players") then
@@ -538,5 +585,16 @@ Citizen.CreateThread(function()
             end
             UI.CheckOpen()
             Wait(1)
+        end
+    end)
+    
+
+    Citizen.CreateThread(function()
+        while true do
+            Citizen.Wait(0)
+
+            if showfps then 
+                enableShowFps()
+            end
         end
     end)

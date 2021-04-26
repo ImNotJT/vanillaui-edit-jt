@@ -1,4 +1,4 @@
-# vanillaui-edit-jt
+# Vanilla UI Edit
 CHANGELOG:
 - Added dragging..
 - Optimized a bit..
